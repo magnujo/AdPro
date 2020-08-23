@@ -54,6 +54,8 @@ object Exercises extends App with ExercisesInterface {
 
   def product (as: List[Int]): Int = ???
 
+  def length1[A] (as: List[A]): Int = ???
+
   // Exercise 9
 
   def reverse[A] (as: List[A]): List[A] = ???

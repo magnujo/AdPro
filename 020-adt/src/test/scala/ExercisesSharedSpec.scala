@@ -239,9 +239,29 @@ class ExercisesSharedSpec (M :ExercisesInterface) extends
 
   }
 
+  // Reusable tests for length (we use the same tests for length and length1)
+  def lengthSpec (lengthN: String, lengthF: List[Any] => Int ) = {
 
+    s"${lengthN} of an empty list is 0" in { 
+      (lengthF (List ())) should be (0)
+      (lengthF (Nil)) should be (0)
+    }
 
-  "Exercise 8 (product). We test the functional specification here only. You have to MANUALLY check that you are using foldLeft and are NOT using recursion, and NOT using foldRight." - {
+    s"${lengthN} of a singleton is 1" in { 
+      forAll ("i") { i: Int => lengthF (List (i)) should be (1) }
+      forAll ("j") { j: Int => lengthF (Cons (j, Nil)) should be (1) }
+    }
+
+    s"${lengthN} grows by one when we add an element" in {
+      forAll ("l") { l: List[Unit] => 
+        val l0 = lengthF (l)
+        val l1 = lengthF (Cons ((), l))
+        (l1) should be (l0 +1)
+      }
+    }
+  }
+
+  "Exercise 8 (product and length). We test the functional specification here only. You have to MANUALLY check that you are using foldLeft and are NOT using recursion, and NOT using foldRight." - {
 
     "product of empty list is 1" in { M.product (Nil) should be (1) }
 
@@ -255,6 +275,8 @@ class ExercisesSharedSpec (M :ExercisesInterface) extends
       forAll ("l") { (l: List[Int]) =>
         M.product (l) should be (scalaList(l).product) }
     }
+
+    lengthSpec ("length1", M.length1 _)
 
   }
 
@@ -288,13 +310,7 @@ class ExercisesSharedSpec (M :ExercisesInterface) extends
 
 
 
-  "Exercise 6 (length)" - {
-    "we test length against scala's List.length. You have to check yourself if you are using foldRight, NOT using recursion, and NOT using foldLeft ..." in {
-      forAll ("l") { (l: List[Int]) =>
-        M.length(l) should be (scalaList(l).length) }
-    }
-  }
-
+  "Exercise 6 (length)" - { lengthSpec ("length", M.length _) }
 
 
   "Exercise 5 (init)" - {

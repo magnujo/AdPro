@@ -5,8 +5,8 @@ package fpinscala
 
 // An ADT of Lists
 sealed trait List[+A]
-case object Nil extends List[Nothing]
-case class Cons[+A](head: A, tail: List[A]) extends List[A]
+final case object Nil extends List[Nothing]
+final case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
 object List {
 
@@ -34,13 +34,15 @@ trait ExercisesInterface {
 
   def dropWhile[A] (l: List[A], f: A => Boolean): List[A]
 
-  def init[A](l: List[A]): List[A]
+  def init[A] (l: List[A]): List[A]
 
-  def length[A](as: List[A]): Int
+  def length[A] (as: List[A]): Int
 
   def foldLeft[A,B] (as: List[A], z: B) (f: (B, A) => B): B
 
   def product (as: List[Int]): Int
+  
+  def length1[A] (as: List[A]): Int
 
   def reverse[A] (as: List[A]): List[A]
 
