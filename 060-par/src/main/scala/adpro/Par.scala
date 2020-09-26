@@ -95,6 +95,10 @@ object Par {
       def apply (cb: B => Unit): Unit =
         p (es) ( a => eval (es) { cb (f (a)) } )
     }
+
+  // Exercise 1
+  //
+  // Write the answer here in a comment.
   
   // Exercise 2 (CB7.4)
 
