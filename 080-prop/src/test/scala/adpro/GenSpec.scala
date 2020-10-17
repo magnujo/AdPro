@@ -36,9 +36,9 @@ class GenSpec
 
   import Util._
 
-  "Exercise 7 (Prop, no tests so far; make sure it compiles" - { }
+  "Exercise 12 (Prop, no tests so far; make sure it compiles" - { }
 
-  "Exercise 6 (union)" - {
+  "Exercise 11 (union)" - {
     "union is idempotent (a simple scenario)" in {
       val g = Gen.unit(42)
       for {
@@ -47,7 +47,7 @@ class GenSpec
     }
   }
 
-  "Exercise 5 (listOfOn generalized size)"  - {
+  "Exercise 10 (listOfOn generalized size)"  - {
     "should give a list of the right size and contents" in {
       val h = Gen.unit (271)
       for { l <- Gen.unit[Double](42.311).listOfN (h) }
@@ -58,7 +58,7 @@ class GenSpec
     }
   }
 
-  "Exercise 4 (flatMap)" - {
+  "Exercise 9 (flatMap)" - {
 
     "A simple fixed flatMap scenario" in {
       val g = Gen.unit (42314)
@@ -69,7 +69,7 @@ class GenSpec
 
   }
 
-  "Exercise 3 (listOfN with fixed size)" - {
+  "Exercise 8 (listOfN with fixed size)" - {
 
     "should compile" in {
       """val r3: List[List[Boolean]] =
@@ -87,7 +87,7 @@ class GenSpec
 
   }
 
-  "Exercise 2 (unit, boolean, and double)" - {
+  "Exercise 7 (unit, boolean, and double)" - {
     "simple test cases" in {
       val r1 = Gen.unit(3.14).toStream(42).take(5).toList
       all (r1) shouldBe 3.14
@@ -99,7 +99,7 @@ class GenSpec
     }
   }
 
-  "Exercise 1 (choose)" - {
+  "Exercise 6 (choose)" - {
 
     "Generate numbers must be in range [|n|;|n|+|m|+1)" in {
       forAll (SCGen.choose (0,10000) -> "start",
