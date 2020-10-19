@@ -34,8 +34,7 @@ object WarmupExercises {
 
 
   // Exercise 1
-  lazy val rng1: RNG = ???
-
+  lazy val rng1: RNG = RNG.Simple (42)
 
   // Exercise 2
   lazy val x: Int = ???
@@ -83,7 +82,8 @@ case class Gen[A] (sample: State[RNG,A]) {
 
   // Exercise 9
 
-  def flatMap[B] (f: A => Gen[B]): Gen[B] = ???
+  def flatMap[B] (f: A => Gen[B]): Gen[B] =
+    Gen (sample flatMap[B] (f (_).sample))
 
   // It would be convenient to also have map  (uses flatMap)
 
