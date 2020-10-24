@@ -78,7 +78,7 @@ trait Parsers[ParseError, Parser[+_]] { self =>
 
   // Exercise 1
 
-  // def manyA ...
+  def manyA: Parser[Int]
 
   // Exercise 2
 
