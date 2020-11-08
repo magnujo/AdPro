@@ -104,16 +104,16 @@ object Monoid {
 
   // Exercise 1
 
-  val intAddition: Monoid[Int] = ???
+  lazy val intAddition: Monoid[Int] = ???
 
 
-  val intMultiplication: Monoid[Int] = ???
+  lazy val intMultiplication: Monoid[Int] = ???
 
 
-  val booleanOr: Monoid[Boolean] = ???
+  lazy val booleanOr: Monoid[Boolean] = ???
 
 
-  val booleanAnd: Monoid[Boolean] = ???
+  lazy val booleanAnd: Monoid[Boolean] = ???
 
 
   // Exercise 2
@@ -260,7 +260,7 @@ object Functor {
 
   // Exercise 13
 
-  val optionFunctor: Functor[Option] = ???
+  lazy val optionFunctor: Functor[Option] = ???
 
   // Exercise 14 continues directly below in the Spec class
 
@@ -367,10 +367,10 @@ object Monad {
 
   // Exercise 15
 
-  val optionMonad: Monad[Option] = ???
+  lazy val optionMonad: Monad[Option] = ???
 
 
-  val listMonad: Monad[List] = ???
+  lazy val listMonad: Monad[List] = ???
 
   // Exercise 16 continues directly below in MonadExercisesSpec
 }
