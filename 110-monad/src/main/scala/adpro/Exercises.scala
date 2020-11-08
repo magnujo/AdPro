@@ -322,10 +322,9 @@ trait Monad[F[_]] extends Functor[F] { self =>
   object MonadLaws {
 
     def associative[A, B, C]
-      (implicit evFA: Arbitrary[F[A]],
-               evFB: Arbitrary[A => F[B]],
-               evFC: Arbitrary[B => F[C]]) =
-
+      (implicit arbFA: Arbitrary[F[A]],
+               arbAFB: Arbitrary[A => F[B]],
+               arbBFC: Arbitrary[B => F[C]]) =
       forAll { (x: F[A], f: A => F[B], g: B => F[C]) =>
         val left = self.flatMap (self.flatMap (x) (f)) (g)
         val right = self.flatMap (x) (a => self.flatMap (f (a)) (g))
@@ -333,37 +332,29 @@ trait Monad[F[_]] extends Functor[F] { self =>
       }
 
 
-
     def identityRight[A]
-      (implicit arbFA: Arbitrary[F[A]], arbFFA: Arbitrary[A => F[A]]) =
-
+      (implicit arbFA: Arbitrary[F[A]], arbAFA: Arbitrary[A => F[A]]) =
       forAll { (x: F[A], f: A => F[A]) =>
         self.flatMap[A,A] (x) (a => self.unit[A] (a)) should be (x) }
 
 
-
-    def identityLeft[A: Arbitrary]
-      (implicit arbFA: Arbitrary[F[A]], arbFFA: Arbitrary[A => F[A]]) =
-
+    def identityLeft[A: Arbitrary] (implicit arbAFA: Arbitrary[A => F[A]]) =
       forAll { (y :A, f: A => F[A]) =>
         self.flatMap[A,A] (self.unit[A](y)) (f) should be (f(y)) }
 
 
-
     def identity[A: Arbitrary]
-      (implicit arbFA: Arbitrary[F[A]], arbFFA: Arbitrary[A => F[A]]) = {
+      (implicit arbFA: Arbitrary[F[A]], arbAFA: Arbitrary[A => F[A]]) = {
       withClue ("identity left: ") { identityLeft[A]  }
       withClue ("identity right:") { identityRight[A] }
     }
 
 
-
     def monad[A: Arbitrary, B, C]
-      (implicit evFA: Arbitrary[F[A]],
-                evFFA: Arbitrary[A => F[A]],
-                evFB: Arbitrary[A => F[B]],
-                evFC: Arbitrary[B => F[C]]) = {
-
+      (implicit arbFA: Arbitrary[F[A]],
+               arbAFA: Arbitrary[A => F[A]],
+               arbAFB: Arbitrary[A => F[B]],
+               arbBFC: Arbitrary[B => F[C]]) = {
         withClue ("associative:") { self.MonadLaws.associative[A,B,C] }
         withClue ("identity:") { self.MonadLaws.identity[A] }
       }
