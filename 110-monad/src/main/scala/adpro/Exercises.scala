@@ -321,7 +321,7 @@ trait Monad[F[_]] extends Functor[F] { self =>
 
   object MonadLaws {
 
-    def associative[A: Arbitrary, B: Arbitrary, C: Arbitrary]
+    def associative[A, B, C]
       (implicit evFA: Arbitrary[F[A]],
                evFB: Arbitrary[A => F[B]],
                evFC: Arbitrary[B => F[C]]) =
@@ -334,7 +334,7 @@ trait Monad[F[_]] extends Functor[F] { self =>
 
 
 
-    def identityRight[A: Arbitrary]
+    def identityRight[A]
       (implicit arbFA: Arbitrary[F[A]], arbFFA: Arbitrary[A => F[A]]) =
 
       forAll { (x: F[A], f: A => F[A]) =>
@@ -358,7 +358,7 @@ trait Monad[F[_]] extends Functor[F] { self =>
 
 
 
-    def monad[A: Arbitrary, B: Arbitrary, C: Arbitrary]
+    def monad[A: Arbitrary, B, C]
       (implicit evFA: Arbitrary[F[A]],
                 evFFA: Arbitrary[A => F[A]],
                 evFB: Arbitrary[A => F[B]],
