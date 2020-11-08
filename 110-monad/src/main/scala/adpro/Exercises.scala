@@ -12,7 +12,7 @@ import org.scalactic.Equality
 
 trait Monoid[A] { self =>
 
-  def op(a1: A, a2: A): A
+  def op (a1: A, a2: A): A
   def zero: A
 
   // Some Laws for monoids (We place them here like in Parsers)
@@ -67,10 +67,10 @@ trait Monoid[A] { self =>
     // Exercise 6
 
     def homomorphism[B] (f: A => B) (mb: Monoid[B])
-      (implicit arbA: Arbitrary[A], arbB: Arbitrary[B]) = ???
+      (implicit arbA: Arbitrary[A]) = ???
 
-    def isomorphism[B] (f: A => B, g: B => A) (mb: Monoid[B])
-      (implicit arbA: Arbitrary[A], arbB: Arbitrary[B]) = ???
+    def isomorphism[B: Arbitrary] (f: A => B, g: B => A) (mb: Monoid[B])
+      (implicit arbA: Arbitrary[A]) = ???
 
     // Exercise 7 continues in MonoidExercisesSpec below
 
