@@ -64,8 +64,8 @@ object BasicProbability {
   case object Girl extends Child
 
   val S = for {
-    f <- Uniform(Boy,Girl)
-    s <- Uniform(Boy,Girl)
+    f <- Uniform (Boy, Girl)
+    s <- Uniform (Boy, Girl)
   } yield (f,s)
 
   //val S = ^^(Uniform(Boy,Girl), Uniform(Boy,Girl))
