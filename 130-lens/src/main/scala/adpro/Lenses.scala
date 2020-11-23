@@ -251,7 +251,7 @@ object Lenses {
   // Optional in the Monocle terminology is the same a partial lense in the
   // terminology of Foster et al.
   //
-  // Use lenses compositin to update itu the same way (move Alex to zipcode
+  // Use lenses composition to update itu the same way (move Alex to zipcode
   // 9100) but in a clearer way. Use the infix binary operator composeOptional
   // to compose a lense with an optional, and use composeLens to compose
   // the optional with a lense).
@@ -274,7 +274,7 @@ object Lenses {
   // which allow very concise generation of lenses for case classes. For
   // instance _zipcode from above can be easily generated as follows:
 
-  lazy val _zipcode1: Lens[Address, ZipCode] = ???
+  val _zipcode1 : Lens[Address, ZipCode] = GenLens[Address] (_.zipcode)
 
   // Define _students1 analogously, complete itu3 to use these new lenses (with
   // the same specification as itu2).
