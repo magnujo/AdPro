@@ -35,6 +35,7 @@ import monocle._
 import monocle.function.all._
 import monocle.macros.GenLens
 import monocle.syntax.apply._
+import monocle.macros.syntax.lens._
 
 import org.scalacheck.Arbitrary
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks._
