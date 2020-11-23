@@ -90,7 +90,7 @@ class LensesSpec
       "ith1 is well behaved (total)" in {
         forAll (Gen.choose (0, 10000)) {
           n: Int =>
-            Lenses.ith1[Int] (42) (n).get (List (1,2,3)) should
+            Lenses.ith1[Int] (42) (n+3).get (List (1,2,3)) should
               be (42)
             Lenses.ith1[Int] (42) (n).set (42) (Nil) should
               be (List.fill (n+1) (42))
