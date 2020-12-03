@@ -226,6 +226,18 @@ class FingerTreeSpec
         be (List (42))
     }
 
+    "two consecutive addL get the order right (regression)" in {
+
+      Empty ().addL (42).addL (41).toList should
+        be (List (41,42))
+    }
+
+    "There is only one way to represent <41,42>, addL must comply (regression)" in {
+
+      Empty ().addL (42).addL (41) should
+        be (Deep (Digit (41), Empty (), Digit (42)))
+    }
+
     "produce a queue containing the inserted elements" in {
       forAll (Gen.listOfN (100, Gen.choose[Int](0,1000)) -> "l") {
         l: List[Int] =>
@@ -235,5 +247,23 @@ class FingerTreeSpec
     }
 
   }
+
+  "Exercise 11 (simple regressions to ensure minimal progress, the real tests are done in Ex 17)" - {
+
+    val t = Deep (Digit (41), Empty (), Digit (42))
+    val l = List (41, 42)
+
+    "simple reducer regression (1)" in {
+       t.toList should be (l)
+     }
+
+     "simple reducer regression (2)" in {
+        reduce[FingerTree].
+          reduceR[Int,List[Int]] (_::_) (t, List()) should
+            be (l)
+     }
+
+  }
+
 
 }
