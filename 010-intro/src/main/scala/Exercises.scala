@@ -42,4 +42,5 @@ object Exercises extends App with ExercisesInterface {
 
   def compose[A,B,C] (f: B => C, g: A => B) : A => C = ???
 
+  print("Hej")
 }

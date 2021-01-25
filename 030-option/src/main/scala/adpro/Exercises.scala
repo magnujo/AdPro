@@ -90,7 +90,7 @@ sealed trait Option[+A] {
 case class Some[+A] (get: A) extends Option[A]
 case object None extends Option[Nothing]
 
-object ExercisesOption {
+object ExercisesOption extends App{
 
   // mean is implemented in Chapter 4 of the text book
 
@@ -113,5 +113,5 @@ object ExercisesOption {
   // Exercise 10
 
   def traverse[A,B] (as: List[A]) (f :A => Option[B]): Option[List[B]] = ???
-
+  print("hej")
 }
