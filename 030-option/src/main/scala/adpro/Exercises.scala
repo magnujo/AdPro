@@ -92,7 +92,10 @@ sealed trait Option[+A] {
 
   // Exercise 6
 
-  def map[B] (f: A=>B): Option[B] = ???
+  def map[B] (f: A=>B): Option[B] = this match {
+    case None => None
+    case Some(x) => Some(f(x))
+  }
 
   /**
    * Ignore the arrow (=>) in default's type below for now.
@@ -101,11 +104,20 @@ sealed trait Option[+A] {
    * and we should talk about this soon). 
    */
 
-  def getOrElse[B >: A] (default: => B): B = ???
+  def getOrElse[B >: A] (default: => B): B = this match {
+    case None => default
+    case Some(x) => x
+  }
 
-  def flatMap[B] (f: A => Option[B]): Option[B] = ???
+  def flatMap[B] (f: A => Option[B]): Option[B] = this match {
+    case None => None
+    case Some(x) => f(x)
+  }
 
-  def filter (p: A => Boolean): Option[A] = ???
+  def filter (p: A => Boolean): Option[A] = this match {
+    case None => None
+    case Some(x) => if(p(x)) Some(x) else None
+  }
 
 }
 
@@ -126,17 +138,22 @@ object ExercisesOption extends App{
 
   // Exercise 7
 
-  def variance (xs: Seq[Double]): Option[Double] = ???
+  def variance (xs: Seq[Double]): Option[Double] = {
+    mean(xs).flatMap(m => mean(xs.map(x => math.pow(x - m, 2))))
+  }
+
 
   // Exercise 8
 
-  def map2[A,B,C] (ao: Option[A], bo: Option[B]) (f: (A,B) => C): Option[C] = ???
+  def map2[A,B,C] (ao: Option[A], bo: Option[B]) (f: (A,B) => C): Option[C] =
+    ao.flatMap(x => bo.flatMap(y => Some(f(x, y))))
 
   // Exercise 9
 
-  def sequence[A] (aos: List[Option[A]]): Option[List[A]] = ???
+  def sequence[A] (aos: List[Option[A]]): Option[List[A]] =
+    aos.foldRight[Option[List[A]]](Some(List[A]()))((a, b) => map2(a, b)((x, y) => x::y))
 
   // Exercise 10
-
-  def traverse[A,B] (as: List[A]) (f :A => Option[B]): Option[List[B]] = ???
+  def traverse[A,B] (as: List[A]) (f :A => Option[B]): Option[List[B]] =
+    sequence(as.map(f))
 }
