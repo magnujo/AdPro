@@ -27,7 +27,11 @@ trait OrderedPoint extends scala.math.Ordered[java.awt.Point] {
 
   this: java.awt.Point =>
 
-  override def compare (that: java.awt.Point): Int =  ???
+  override def compare (that: java.awt.Point): Int =  {
+    if(this.x < that.x) 1
+    else if (this.x == that.x && this.y < that.y) 1
+    else 0
+  }
 
 }
 
@@ -44,27 +48,45 @@ object Tree {
 
   // Exercise 2
 
-  def size[A] (t :Tree[A]): Int = ???
+  def size[A] (t :Tree[A]): Int = t match {
+    case Leaf(x) => 1
+    case Branch(x, y) => 1 + size(x) + size(y)
+  }
+
+
 
   // Exercise 3
 
-  def maximum (t: Tree[Int]): Int = ???
+  def maximum (t: Tree[Int]): Int = t match {
+    case Leaf(x) => x
+    case Branch(l, r) =>  maximum(l).max(maximum(r))
+  }
 
   // Exercise 4
 
-  def map[A,B] (t: Tree[A]) (f: A => B): Tree[B] = ???
+  def map[A,B] (t: Tree[A]) (f: A => B): Tree[B] = t match {
+    case Leaf(x) => Leaf(f(x))
+    case Branch(l, r) => Branch(map(l)(f), map(r)(f))
+  }
 
   // Exercise 5
 
-  def fold[A,B] (t: Tree[A]) (f: (B,B) => B) (g: A => B): B = ???
+  def fold[A,B] (t: Tree[A]) (f: (B,B) => B) (g: A => B): B = t match {
+    case Leaf(x) => g(x)
+    case Branch(l, r) => f(fold(l)(f)(g), fold(r)(f)(g))
+  }
 
-  def size1[A] (t: Tree[A]): Int = ???
+  def size1[A] (t: Tree[A]): Int =
+    fold(t)((a: Int, b: Int) => 1 + a + b)(_ => 1)
 
-  def maximum1 (t: Tree[Int]): Int = ???
+  def maximum1 (t: Tree[Int]): Int =
+    fold(t)((a: Int, b: Int) => a.max(b))(a => a)
 
-  def map1[A,B] (t: Tree[A]) (f: A=>B): Tree[B] = ???
+  def map1[A,B] (t: Tree[A]) (f: A=>B): Tree[B] =
+    fold[A, Tree[B]](t)((a, b) => Branch(a, b))(x => Leaf(f(x)))
 
 }
+
 
 sealed trait Option[+A] {
 
@@ -91,7 +113,11 @@ case class Some[+A] (get: A) extends Option[A]
 case object None extends Option[Nothing]
 
 object ExercisesOption extends App{
+  import Tree._
 
+  val b = Branch(Leaf(1), Leaf(2))
+
+  print( size1(b))
   // mean is implemented in Chapter 4 of the text book
 
   def mean(xs: Seq[Double]): Option[Double] =
@@ -113,5 +139,4 @@ object ExercisesOption extends App{
   // Exercise 10
 
   def traverse[A,B] (as: List[A]) (f :A => Option[B]): Option[List[B]] = ???
-  print("hej")
 }
