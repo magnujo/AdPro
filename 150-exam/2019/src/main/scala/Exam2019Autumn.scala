@@ -129,7 +129,10 @@ object Exam2019Autumn {
 
     type Result = Option[Player]
 
-    def winner (player1: Move, player2: Move): Result = ???
+    def winner (player1: Move, player2: Move): Result = (player1, player2) match {
+      case (Rock, Paper) => Some(P2)
+      case (Paper, Scissors) =>
+    }
 
     /**
      *  Assume that  players use  very simple  strategies to  play the
