@@ -101,19 +101,33 @@ sealed trait Stream[+A] {
   def append[B>:A] (a1: => Stream[B]): Stream[B] = //B is a supertype of A
     this.foldRight(a1) ((x,xs) => cons(x, xs))
 
-  def flatMap = ???
+  def flatMap[B] (f: A => Stream[B]): Stream[B] = {
+    this.foldRight(Stream[B]())((x,xs) => f(x).append(xs))
+  }
 
   //Exercise 09
   //Put your answer here:
+  // Because on a list it would filter the whole list before it outputtet the head
+
 
   //Exercise 10
   //Put your answer here:
+  def fib: Stream[Int] = {
+    def go(a: Int, b: Int): Stream[Int] = {
+      cons(a, go(b, a+b))
+    }
+    go(0, 1)
+  }
 
   // Exercise 13
 
-  def map_ = ???
-  def take_ = ???
-  def takeWhile_ = ???
+  def map_[B](f: A => B) = unfold(0)((x: Int) => Some(f(this.drop(x).headOption.get), x+1))
+  def take_(n: Int) = unfold(0)(x => Some(this.drop(x).headOption.get, x+1)).take(n)
+  def takeWhile_(p: A => Boolean) = unfold(0)(x => {
+    if (p(this.drop(x).headOption.get)) Some(this.drop(x).headOption.get, x+1)
+    else Some(this.drop(x+1).headOption.get, x+2)
+  })
+
   def zipWith_ = ???
 
 }
@@ -152,18 +166,20 @@ object Stream {
 
   //Exercise 11
 
-  def unfold [A, S] (z: S) (f: S => Option[(A, S)]): Stream[A] = ???
+  def unfold [A, S] (z: S) (f: S => Option[(A, S)]): Stream[A] = {
+      cons(f(z).get._1, unfold(f(z).get._2)(f))
+  }
 
   // Exercise 12
 
-  def fib2  = ???
-  def from2 = ???
+  def fib2  = unfold((0, 1))(x => Some(x._1, (x._2, x._1+x._2)))
+  def from2(n: Int) = unfold(n)(x => Some(n, n+1))
 
 }
 
 object Tester extends App {
   import Stream._
-  import List._
+  //import List._
 
   val s = cons(1, cons(2, Empty))
 
@@ -172,7 +188,12 @@ object Tester extends App {
  // print(naturals.take(10000000).drop(41).take(10).toList)
  // print(naturals.takeWhile(x => x < 10000).drop(100).take(50).toList)
   //print(naturals.take(10).forAll(_ < 0))
-  //print(naturals.map(_*2).drop(30).take(50).toList)
-  print(naturals.drop(42).filter( x => x%2 ==0).take(30).toList)
+  print(naturals.map_(_*2).drop(30).take(50).toList)
+  //print(naturals.drop(42).filter( x => x%2 ==0).take(30).toList)
+  //println(naturals.flatMap(to _).take(100).toList)
+  //println(naturals.flatMap(x => from(x)).take(100).toList)
+  //print(unfold(1)(x => Some((x, x+1))).take(10).toList)
+  //print(fib2.take(10).toList)
+
 }
 
