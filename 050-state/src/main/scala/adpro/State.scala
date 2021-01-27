@@ -16,6 +16,9 @@
 // This file is compiled with 'sbt compile' and tested with 'sbt test'.
 
 package adpro
+import scala.List._
+import List._
+import scala.collection.immutable.List
 
 trait RNG {
   def nextInt: (Int, RNG)
@@ -45,32 +48,56 @@ object RNG {
 
   // Exercise 1 (CB 6.1)
 
-  def nonNegativeInt (rng: RNG): (Int, RNG) = ???
+  def nonNegativeInt (rng: RNG): (Int, RNG) = {
+    rng.nextInt match {
+      case (i1, rng) => if (i1 < 0) (-(i1 + 1), rng) else (i1,rng)} // Will handle Int.MinValue
+  }
 
   // Exercise 2 (CB 6.2)
 
-  def double (rng: RNG): (Double, RNG) = ???
+  def double (rng: RNG): (Double, RNG) = {
+    nonNegativeInt(rng) match { case (i1, rng) => (i1 / (Int.MaxValue.toDouble + 1), rng) } // +1 handles Int.MaxValue
+  }
 
   // Exercise 3 (CB 6.3)
 
-  def intDouble (rng: RNG) = ???
+  def intDouble (rng: RNG) : ((Int, Double), RNG) = {
+    val (i1, rng2) = nonNegativeInt(rng)
+    val (d2, rng3) = double(rng2)
+    ((i1,d2), rng3)
+  }
 
-  def doubleInt (rng: RNG) = ???
+  def doubleInt (rng: RNG): ((Double, Int),RNG) = {
+    val (d, rng1) = double(rng)
+    val (i, rng2) = nonNegativeInt(rng1)
+    ((d,i), rng2)
+  }
 
   def boolean (rng: RNG): (Boolean, RNG) =
     rng.nextInt match { case (i,rng2) => (i % 2 == 0, rng2) }
 
   // Exercise 4 (CB 6.4)
 
-  def ints (count: Int) (rng: RNG) = ???
+  def ints (count: Int) (rng: RNG): (List[Int], RNG) = {
+    def go(l: List[Int], n: Int, rng: RNG): (List[Int], RNG) = {
+      val (i, r) = rng.nextInt
+      if (n ==0) (l, rng)
+      else go(i::l, n-1, r)
+    }
+    go(List[Int](), count, rng)
+  }
+
 
   // There is something terribly repetitive about passing the RNG along
   // every time. What could we do to eliminate some of this duplication
   // of effort?
 
   type Rand[+A] = RNG => (A, RNG)
+  //RNG => (List[A], RNG)
 
-  val int: Rand[Int] = _.nextInt
+  val int: Rand[Int] = _.nextInt //Samme som nedenunder
+  //val int: Rand[Int] = x => x.nextInt
+
 
   def unit[A] (a: A): Rand[A] =
     rng => (a, rng)
@@ -86,11 +113,16 @@ object RNG {
   // Exercise 5 (CB 6.5) (Lazy is added so that the class does not fail
   // at load-time without your implementation).
 
-  lazy val _double: Rand[Double] = ???
+  lazy val _double: Rand[Double] =
+    map (nonNegativeInt) (x => x / ( Int.MaxValue.toDouble + 1))
 
   // Exercise 6 (CB 6.6)
 
-  def map2[A,B,C] (ra: Rand[A], rb: Rand[B]) (f: (A, B) => C): Rand[C] = ???
+  def map2[A,B,C] (ra: Rand[A], rb: Rand[B]) (f: (A, B) => C): Rand[C] = rng => {
+    val (v, r) = ra(rng)
+    val (v2, r2) = rb(r)
+    (f(v, v2), r2)
+  }
 
   // this is given in the book
 
@@ -102,16 +134,28 @@ object RNG {
   lazy val randDoubleInt: Rand[(Double, Int)] = both (double, int)
 
   // Exercise 7 (6.7)
+  //RNG => (List[A], RNG)
+  def sequence[A] (fs: List[Rand[A]]): Rand[List[A]] = {
+    fs.foldRight(unit(List[A]()))((x, xs) => map2(x, xs)((x,y) => x::y))
+  }
 
-  def sequence[A] (fs: List[Rand[A]]): Rand[List[A]] = ???
 
-  def _ints (count: Int): Rand[List[Int]] = ???
+  def _ints (count: Int): Rand[List[Int]] =
+    sequence(List.fill(count)(rng => (rng.nextInt._1, rng.nextInt._2)))
 
   // Exercise 8 (6.8)
 
-  def flatMap[A,B] (f: Rand[A]) (g: A => Rand[B]): Rand[B] = ???
+  def flatMap[A,B] (f: Rand[A]) (g: A => Rand[B]): Rand[B] = (rng: RNG) => {
+    val (a, r) = f(rng)
+    g(a)(r)
+  }
 
-  def nonNegativeLessThan (n: Int): Rand[Int] = ???
+
+
+  def nonNegativeLessThan (n: Int): Rand[Int] =
+    flatMap(nonNegativeInt)(x => unit(x % n))
+
+
 
 }
 
@@ -121,17 +165,31 @@ case class State[S, +A](run: S => (A, S)) {
 
   // Exercise 9 (6.10)
 
-  def map[B] (f: A => B): State[S, B] = ???
+  def map[B] (f: A => B): State[S, B] =
+    State(s => {
+      val (a, state2) = run(s)
+      (f(a), state2)
+    })
 
-  def map2[B,C] (sb: State[S, B]) (f: (A, B) => C): State[S, C] = ???
+  def map2[B,C] (sb: State[S, B]) (f: (A, B) => C): State[S, C] = State(s => {
+    val (v1, s1) = run(s)
+    val (v2, s2) = sb.run(s1)
+    (f(v1, v2), s2)
+  })
 
-  def flatMap[B] (f: A => State[S, B]): State[S, B] = ???
+  def flatMap2[B] (f: A => State[S, B]): State[S, B] = State(s => {
+    val (v, state) = run(s)
+    f(v).run(state)
+  })
 
 }
 
 object State {
 
   import adpro.Stream
+  import scala.collection.immutable.List._
+
+
 
   type Rand[A] = State[RNG, A]
 
@@ -140,7 +198,10 @@ object State {
 
   // Exercise 9 (6.10) continued
 
-  def sequence[S,A] (sas: List[State[S, A]]): State[S, List[A]] = ???
+  def sequence[S,A] (sas: List[State[S, A]]): State[S, List[A]] = {
+    sas.foldRight(unit[S, List[A]](List()))((f, acc) => f.map2(acc)(_ :: _))
+  }
+
 
   // This is given in the book:
 
@@ -166,4 +227,17 @@ object State {
 
   lazy val random_integers = ???
 
+}
+
+object Tester extends App{
+  import RNG._
+  import State._
+  //println(_double(SimpleRNG(42))._1)
+  //print(nonNegativeInt(SimpleRNG(42))._1/ (Int.MaxValue.toDouble +1))
+  //print(randIntDouble(SimpleRNG(42)))
+  //print(ints(10)(SimpleRNG(42)))
+  //print(_ints(10)(SimpleRNG(42)))
+  //print(sequence(List((rng: RNG) => rng.nextInt))(SimpleRNG(42)))
+
+  List(1,2) flatMap()
 }

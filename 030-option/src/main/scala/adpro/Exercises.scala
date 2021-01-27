@@ -151,7 +151,7 @@ object ExercisesOption extends App{
   // Exercise 9
 
   def sequence[A] (aos: List[Option[A]]): Option[List[A]] =
-    aos.foldRight[Option[List[A]]](Some(List[A]()))((a, b) => map2(a, b)((x, y) => x::y))
+    aos.foldRight[Option[List[A]]](Some(List[A]()))((x, xs) => map2(x, xs)((x, y) => x::y))
 
   // Exercise 10
   def traverse[A,B] (as: List[A]) (f :A => Option[B]): Option[List[B]] =
